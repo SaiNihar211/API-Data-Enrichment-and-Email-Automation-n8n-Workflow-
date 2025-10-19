@@ -1,0 +1,407 @@
+{
+  "name": "API trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "the main agenda is to check the excel sheet for the missing values. After that we have certain api calls to find with the id what we have"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -928,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "a3871fee-d75a-4f13-aa72-5667132d44f4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "API's are used to find the AGE, NATION, GENDER. from APIPHENY. \nEach api are used by knowing the name of the person "
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -688,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "5443266b-face-4c5e-b301-8410bcf450f6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        224
+      ],
+      "id": "0b814559-3618-490e-ac7e-ffb801da1d8d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk",
+          "mode": "list",
+          "cachedResultName": "FINDING REF",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -528,
+        224
+      ],
+      "id": "f8423f05-d154-466d-95fc-7befff43fda5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ok2276PMCk8n5nCQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.agify.io/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.NAME }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        224
+      ],
+      "id": "9b7e9899-2ae4-4e18-82d5-0c4fb5b019fc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://api.genderize.io/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        224
+      ],
+      "id": "490b9dca-f5cd-4564-b6a6-57a89c5bbc1b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk",
+          "mode": "list",
+          "cachedResultName": "FINDING REF",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q8jsRXwS9flfxzrKnIoDuq31UQxksCkY2g6VGNgHaQk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Get row(s) in sheet').item.json.ID }}",
+            "NAME": "={{ $('Get row(s) in sheet').item.json.NAME }}",
+            "AGE": "={{ $('HTTP Request').item.json.age }}",
+            "GENDER": "={{ $('HTTP Request1').item.json.gender }}",
+            "NATION": "={{ $json.country[0].country_id }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AGE",
+              "displayName": "AGE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GENDER",
+              "displayName": "GENDER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NATION",
+              "displayName": "NATION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        224
+      ],
+      "id": "b721a174-6917-4660-9bbc-97ab66a53664",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ok2276PMCk8n5nCQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.nationalize.io/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $('Get row(s) in sheet').item.json.NAME }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        96,
+        224
+      ],
+      "id": "bee2e345-194f-4b80-84d8-a600e13bcc27",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "sendTo": "ragavsainihar211@gmail.com",
+        "subject": "THESE ARE THE UPDATE LIST",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        224
+      ],
+      "id": "57be3b68-2e2b-47ca-90dc-a93b733a27bf",
+      "name": "Send a message",
+      "webhookId": "ace258ed-3b84-48fb-889a-95785fb85d08",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "C0XqOxVB8koXdBCo",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Make an email message draft on the updated Google Sheet name, such as \n {{ $json.ID }}\n{{ $json.NAME }}\n{{$json.GENDER }}\n{{$json.AGE }}\n{{ $json.NATION }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        224
+      ],
+      "id": "532355b2-69c2-4f1c-aafa-a8e292b88134",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        432
+      ],
+      "id": "d99d61b1-ee63-43b2-abcb-1d0cbbe3acf1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "FFcDATwFnvZmprEv",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4081b805-af54-4922-b15d-2b9fdc505c7f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b48ebc76bf6fa816238a6d4f29c204986a8b980945588c2ad84fe3ac6f44265c"
+  },
+  "id": "F8bfHNBcCgd0buVh",
+  "tags": []
+}
