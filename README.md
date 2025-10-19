@@ -8,3 +8,5 @@ It can be used for:
 4. Colleges
 5. Assumptions
 6. Surveys
+
+<img width="1600" height="789" alt="image" src="https://github.com/user-attachments/assets/87819368-1e02-4e60-947d-92eac753e9f9" />
